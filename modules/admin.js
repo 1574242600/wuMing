@@ -1,7 +1,7 @@
 const addUser = async (ctx) =>{
     const post = ctx.request.body;
     const is = () => {
-        if (post.name.length < -1 || !post.pwd < -1) return true;
+        if (empty(post,['name','pwd'])) return true;
         if (post.name.length > 32) return true;
         return isNaN(Number(post.admin));
     };
@@ -13,6 +13,7 @@ const addUser = async (ctx) =>{
 
 const addSeries = async (ctx) =>{
     const post = ctx.request.body;
+
 };
 
 

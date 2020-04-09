@@ -81,6 +81,19 @@ class mysql {
         });
     }
 
+    static async addSeries(name,sid = 0){
+        return await Sequelize.Series.findOrCreate({where: {name: name},
+            defaults: {
+                'name': name,
+                'sid': sid,
+                'total' : 0
+            }
+        }).then(([user, created]) => {
+            return created;
+        });
+
+    }
+
 }
 
 

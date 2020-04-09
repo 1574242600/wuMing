@@ -3,16 +3,20 @@ const md5 = require('md5-node');
 const Sequelize  = require('../utils/mysql');
 
 class Admin {
+    UserAdmin;
+    constructor() {
+        this.UserAdmin = user  === undefined ? 0 : user.admin;
+    }
+
     async addUser(post){
-        const UserAdmin = user  === undefined ? 0 : user.admin;
-        if (Number(UserAdmin) <= 3 || UserAdmin <= post.admin) {
+        if (!this.isAdmin() || this.UserAdmin <= post.admin) {
             return language.adminError;
         }
 
-        const created = mysql.addUser(post);
+        const created = await mysql.addUser(post);
 
         if(created) {
-            this.adminLog(`管理员[${user.uid}]: 创建账户${name}{${(UserAdmin)}}成功 --`+ new Date());
+            this.adminLog(`管理员[${user.uid}]: 创建账户${name}{${(this.UserAdmin)}}成功 --`+ new Date());
             return language.succeed;
         }
 
@@ -20,11 +24,24 @@ class Admin {
     }
 
     async addSeries(name,sid = 0){
+        if (!this.isAdmin()){
+            return language.adminError;
+        }
 
+        const created = await mysql.addSeries(name,sid);
+        if (created){
+            this.adminLog(`管理员[${user.uid}]: 创建系列《${name}》成功 --`+ new Date());
+            return language.succeed;
+        }
+        return language.addSeriesError;
     }
 
     async adminLog(msg){
         log.info(msg);
+    }
+
+    isAdmin(){
+        return (this.UserAdmin >= 3);
     }
 }
 
@@ -81,7 +98,7 @@ class mysql {
         });
     }
 
-    static async addSeries(name,sid = 0){
+    static async addSeries(name,sid){
         return await Sequelize.Series.findOrCreate({where: {name: name},
             defaults: {
                 'name': name,

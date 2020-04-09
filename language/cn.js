@@ -11,6 +11,10 @@ module.exports = {
         'code': 400,
         'mes': '用户已存在'
     },
+    addSeriesError: {
+        'code': 400,
+        'mes': '系列已存在'
+    },
     adminError: {
         'code': 401,
         'mes': '没有权限'

@@ -15,6 +15,6 @@ router.get('/', async (ctx) => {
 router.post('/user/login', User.login);
 router.get('/user/info', User.info);
 router.post('/admin/user/add', Admin.addUser);
-//router.post('/admin/series/add', Admin.addUser);
+router.post('/admin/series/add', Admin.addSeries);
 
 module.exports = router;

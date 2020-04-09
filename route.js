@@ -1,6 +1,6 @@
 const router = require('koa-router')();
-const User = require('./routes/user');
-const Admin = require('./routes/admin');
+const User = require('./modules/user');
+const Admin = require('./modules/admin');
 
 //判断服务端是否存活   ps: just monika!
 router.get('/ddlc', async (ctx) => {

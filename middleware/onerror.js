@@ -1,4 +1,4 @@
-const logger = require('../utils/logger');
+const log = require('../utils/logger');
 
 module.exports = async (ctx, next) => {
     try {
@@ -6,13 +6,13 @@ module.exports = async (ctx, next) => {
     } catch (e) {
         switch (e[2]) {
             case 'info':
-                logger.info('info: ' + (e instanceof Error ? e.stack : e[1]));
+                log.info('info: ' + (e instanceof Error ? e.stack : e[1]));
                 break;
             case 'error':
-                logger.error('error: ' + (e instanceof Error ? e.stack : e[1]));
+                log.error('error: ' + (e instanceof Error ? e.stack : e[1]));
                 break;
             default:
-                logger.error('error: ' + (e instanceof Error ? e.stack : e[1]));
+                log.error('error: ' + (e instanceof Error ? e.stack : e[1]));
         }
         ctx.set({
             'Content-Type': 'application/json; charset=UTF-8',

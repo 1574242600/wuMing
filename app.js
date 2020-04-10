@@ -1,5 +1,6 @@
 const Koa = require('koa');
 const app = new Koa();
+const config = require('./config');
 const log = require('./utils/logger');
 const session = require('./middleware/session');
 const bodyParser = require('koa-bodyparser');
@@ -13,6 +14,7 @@ process.on('uncaughtException', (e) => {
     log.error('未捕获错误: ' + e);
 });
 
+app.keys = config.keys;
 app.proxy = true;
 app.use(session.Session(session.config,app));
 app.use(bodyParser());

@@ -1,6 +1,7 @@
-const _class = require('../modules/allClass');
+const _class = require('../utils/allClass');
 
 /**
+ * 判断对象是否为空
  * @name empty
  * @param post object
  * @param arr string[]

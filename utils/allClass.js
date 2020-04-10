@@ -1,6 +1,6 @@
 const stringRandom = require('string-random');
 const md5 = require('md5-node');
-const Sequelize  = require('../utils/mysql');
+const Sequelize  = require('./mysql');
 
 class Admin {
     UserAdmin;
@@ -34,6 +34,15 @@ class Admin {
             return language.succeed;
         }
         return language.addSeriesError;
+    }
+
+    //添加单集
+    async addEs(id,name){
+
+    }
+
+    async addVideo(vid,){
+
     }
 
     async adminLog(msg){
@@ -74,6 +83,9 @@ class User {
     }
 
     async setSession(user,session){
+        delete user.pwd;
+        delete user.rand;
+
         session.user = user;
     }
 }

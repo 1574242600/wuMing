@@ -5,8 +5,8 @@ const config = {
     key: 'koa:sess',
     maxAge: 86400000 * 30,
     overwrite: true,
-    httpOnly: false,
-    signed: false,
+    httpOnly: true,
+    signed: true,
     rolling: false,
     renew: false,
 };

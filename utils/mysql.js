@@ -58,6 +58,8 @@ const Es = sequelize.define('es', {
     },
     vid: {
         type: Sequelize.INTEGER(),
+        autoIncrement: true,
+        unique: true,
         allowNull:false
     }
 }, {
@@ -68,8 +70,8 @@ const Es = sequelize.define('es', {
 const Videos = sequelize.define('videos', {
     vid: {
         type: Sequelize.INTEGER(),
-        primaryKey: true,
-        autoIncrement: true,
+        allowNull:false,
+        unique: true,
     },
     url: {
         type: Sequelize.STRING(128),
@@ -113,6 +115,10 @@ const Users = sequelize.define('users', {
     timestamps: false ,
     freezeTableName: true
 });
+
+Videos.removeAttribute('id');
+Series.hasMany(Es,{ foreignKey: 'id' });
+Es.hasMany(Videos,{ sourceKey: 'vid', foreignKey: 'vid'});
 
 //sequelize.sync();
 

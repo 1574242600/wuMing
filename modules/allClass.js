@@ -58,7 +58,7 @@ class User {
             return language.loginErr1;
         }
 
-        session.user = user;
+        this.setSession(user,session);
         return language.succeed;
     }
 
@@ -71,6 +71,10 @@ class User {
 
     async isLogin(){
         return !(user === undefined)
+    }
+
+    async setSession(user,session){
+        session.user = user;
     }
 }
 

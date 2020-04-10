@@ -1,5 +1,4 @@
 const login = async (ctx) => {
-    let post = ctx.request.body;
     ctx.response.body = language.loginErr1;
 
     if (!empty(post,['name','pwd'])) {

@@ -14,12 +14,13 @@ process.on('uncaughtException', (e) => {
 });
 
 app.proxy = true;
-
 app.use(session.Session(session.config,app));
 app.use(bodyParser());
 app.use(onerror);
 app.use(hreader);
+
 app.use(init);
+
 app.use(router.routes());
 app.listen(3000);
 log.info('监听端口 3000');

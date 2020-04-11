@@ -17,13 +17,15 @@ const addSeries = async (ctx) =>{
     ctx.response.body = await ctx.Admin.addSeries(post.name,sid);
 };
 
-const addEs = async (ctx) =>{
-
-    ctx.response.body = await ctx.Admin.addSeries(post.name,sid);
+const addEsAndVideo = async (ctx) =>{
+    if(empty(post,['xid','sid','name'])) throw language.paramException;
+    if(empty(post,['file']) && empty(post,['url'])) throw language.paramException;
+    ctx.response.body = await ctx.Admin.addEsAndVideo(post.xid,post.sid,post.name,post);
 };
 
 
 module.exports = {
     addUser,
-    addSeries
+    addSeries,
+    addEsAndVideo,
 };

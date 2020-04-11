@@ -12,7 +12,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 });
 
 const Series = sequelize.define('series', {
-    id: {
+    xid: {
         type: Sequelize.INTEGER(),
         primaryKey: true,
         autoIncrement: true
@@ -37,9 +37,10 @@ const Series = sequelize.define('series', {
 });
 
 const Es = sequelize.define('es', {
-    id: {
+    xid: {
         type: Sequelize.INTEGER(),
-        primaryKey: true,
+        index: true,
+        allowNull:false
     },
     sid: {
         type:Sequelize.INTEGER(),
@@ -58,8 +59,8 @@ const Es = sequelize.define('es', {
     },
     vid: {
         type: Sequelize.INTEGER(),
+        primaryKey: true,
         autoIncrement: true,
-        unique: true,
         allowNull:false
     }
 }, {
@@ -116,15 +117,79 @@ const Users = sequelize.define('users', {
     freezeTableName: true
 });
 
+Es.removeAttribute('id');
 Videos.removeAttribute('id');
-Series.hasMany(Es,{ foreignKey: 'id' });
+Series.removeAttribute('id');
+
+
+Series.hasMany(Es,{ foreignKey: 'xid' });
 Es.hasMany(Videos,{ sourceKey: 'vid', foreignKey: 'vid'});
 
-//sequelize.sync();
+sequelize.sync();
 
 module.exports = {
+    sequelize,
     Users,
     Series,
     Es,
     Videos
 };
+
+
+/*
+
+系列表 `series`
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| xid    | int(11) pr(auto) | id |
+| sid   | int(11)  默认 0  | 父id |
+| name  | vchar(64)        | 名称 |
+| total | int(11)          | 总话数 |
+
+话数表 `es`
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| series.xid    | int(11) index       | 见系列表 |
+| sid   | int(11) index    | 见系列表 |
+| es    | int(11) index    | 话数 |
+| name  | vchar(64)        | 话名称 |
+| vid   | int(11) pr(auto)          | 视频id |
+
+视频表 `videos`
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| es.vid    | int(11) pr  | 视频id |
+| url    | vchar(128)        | 视频url |
+| file   | vchar(128)        | 视频文件路径 |
+
+用户表 `users`
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| uid    | int(11) pr (auto)  | 用户id |
+| name   | vchar(32)  UN      | 用户名 |
+| pwd    | char(32)           |  密码 |
+| rand   | char(6)            | 随机字符串|
+| admin | int(11)    默认 0  | 5创始人 4管理员 2-3未定义 1用户|
+
+收藏表
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| users.uid    | int(11) pr         | 见用户表 |
+| list   | int(11)            | 收藏     |
+
+历史记录表
+
+| 字段名 | 类型 | 备注 |
+|-------|-----|-------|
+| users.uid  | int(11) pr         | 见用户表 |
+| series.xid   | int(11)            | 见系列表 |
+| es   | int(11)            | 当前话数 |
+| lt   | int(11)            | 上一次观看进度 |
+| time | date               | 上一次观看时间 |
+
+ */

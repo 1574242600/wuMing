@@ -12,6 +12,7 @@ const _class = require('../utils/allClass');
  * empty(post,['pwd']) : true
  * empty(post,['pwd','name']) : true
  */
+
 global.empty = (post,arr) => {
     for (const value of arr){
         if (post[value] === undefined) return true;

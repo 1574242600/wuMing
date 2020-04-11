@@ -16,5 +16,5 @@ router.post('/user/login', User.login);
 router.get('/user/info', User.info);
 router.post('/admin/user/add', Admin.addUser);
 router.post('/admin/series/add', Admin.addSeries);
-
+router.post('/admin/es/add', Admin.addEsAndVideo);
 module.exports = router;

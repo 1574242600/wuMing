@@ -36,13 +36,38 @@ class Admin {
         return language.addSeriesError;
     }
 
-    //添加单集
-    async addEs(id,name){
+    /**
+     * 添加话和对应视频
+     * @name addEsAndVideo
+     * @param xid Number 系列id
+     * @param name string 话标题 可为空
+     * @param sid Number 子系列id
+     * @param post object['file','url'] 视频地址 任一即可
+     * @return language object api信息
+     * @example
+     * post = {
+     *    file : '/114514/6KiA6K666Ieq55Sx.mp4'
+     * }
+     * addEsAndVideo(1,'写示例只为玩梗')  : language.succeed
+     * post = {
+     *    url : 'https://www.example.com/10492/5oiR6KaB.mp4'
+     * }
+     * addEsAndVideo(1,'小熊维尼第一集')  : language.succeed
+     */
 
-    }
+    async addEsAndVideo(xid, sid = 0, name = '0', post){
+        if (!this.isAdmin()){
+            return language.adminError;
+        }
+        post.file = post.file ? post.file : 0;
+        post.url = post.url ? post.file : 0;
 
-    async addVideo(vid,){
+        const created = await mysql.addEsAndVideo(xid,sid,name,post);
 
+        if (created){
+            this.adminLog(`管理员[${user.uid}]: 添加话[${xid}-${sid}] 《${name}》成功 --`+ new Date());
+            return language.succeed;
+        }
     }
 
     async adminLog(msg){
@@ -125,6 +150,47 @@ class mysql {
             return created;
         });
 
+    }
+
+    static async addEsAndVideo(xid, sid, name, post){
+        let S = Sequelize.sequelize;
+        let es =  await this.querySeriesEsTotal(xid,sid) + 1;
+        return S.transaction(async t => {
+
+            let vid = await Sequelize.Es.create({
+                    'xid': xid,
+                    'sid': sid,
+                    'name': name,
+                    'es' : es,
+            },{transaction: t}).then(es =>{
+                return es.vid;
+            });
+
+            await Sequelize.Videos.create({
+                'vid': vid,
+                'file': post.file,
+                'url' : post.url ,
+            },{transaction: t});
+
+            await Sequelize.Series.update({total: es},{where:{'xid': xid ,'sid': sid},transaction: t});
+
+            return true;
+        }).then(result => {
+            return result;
+        }).catch(e => {
+            log.error(e.stack);
+            throw language.DatabaseException;
+        });
+    }
+
+     static async querySeriesEsTotal(xid, sid){
+        return Sequelize.Series.findOne({
+            where:{ 'xid': xid ,'sid': sid},
+            attributes: ['total']
+        }).then(c => {
+                if (c === null) throw language.paramException;
+                return c.total;
+        })
     }
 
 }

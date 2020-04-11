@@ -23,5 +23,6 @@ module.exports = {
         'code': 401,
         'mes': '你还没有登录'
     },
-    paramException: [400 , '请输入正确的参数', 'info']
+    paramException: [400 , '请输入正确的参数', 'info'],
+    DatabaseException: [500 , '数据库错误，详情请查看日志', 'error']
 };

@@ -1,5 +1,4 @@
 const _class = require('../utils/allClass');
-
 /**
  * 判断对象是否为空
  * @name empty
@@ -26,6 +25,7 @@ module.exports = async (ctx, next) => {
     global.language = require('../language/cn');
     global.user = ctx.session.user  === undefined ? undefined : ctx.session.user;
     if(ctx.request.method === 'POST') global.post = ctx.request.body;
+
 
     ctx.Admin = new _class.Admin;
     ctx.User = new _class.User;

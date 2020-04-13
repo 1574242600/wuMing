@@ -1,3 +1,12 @@
+/**
+ * @global language
+ * @global post
+ * @global get
+ *
+ * */
+
+
+
 const addUser = async (ctx) =>{
     const is = () => {
         if (empty(post,['name','pwd'])) return true;

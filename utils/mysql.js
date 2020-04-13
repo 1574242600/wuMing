@@ -125,7 +125,7 @@ Series.removeAttribute('id');
 Series.hasMany(Es,{ foreignKey: 'xid' });
 Es.hasMany(Videos,{ sourceKey: 'vid', foreignKey: 'vid'});
 
-sequelize.sync();
+//sequelize.sync();
 
 module.exports = {
     sequelize,

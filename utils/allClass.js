@@ -1,3 +1,11 @@
+/**
+ * @global token
+ * @global language
+ * @global user
+ *
+ * */
+
+
 const stringRandom = require('string-random');
 const md5 = require('md5-node');
 const Sequelize  = require('./mysql');
@@ -81,7 +89,7 @@ class Admin {
 
 class User {
 
-    async login(name,pwd,session){
+    async login(name,pwd){
         const user = await mysql.queryUser({name: name},['pwd','rand','admin','uid']);
 
         if (user === null) {
@@ -92,27 +100,24 @@ class User {
             return language.loginErr1;
         }
 
-        this.setSession(user,session);
-        return language.succeed;
+        delete user.rand;
+        delete user.pwd;
+
+        let userToken = await token.getToken(user);
+        return  Object.assign({},language.succeed,{userToken: userToken});
     }
 
     async info(uid){
         const data = {
             data : Object.assign(user, await mysql.queryUser({uid: uid}, ['name'])),
         };
-        return Object.assign(language.succeed,data);
+        return Object.assign({},language.succeed,data);
     }
 
     async isLogin(){
         return !(user === undefined)
     }
 
-    async setSession(user,session){
-        delete user.pwd;
-        delete user.rand;
-
-        session.user = user;
-    }
 }
 
 class mysql {

@@ -11,6 +11,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     }
 });
 
+//todo 封面
 const Series = sequelize.define('series', {
     xid: {
         type: Sequelize.INTEGER(),

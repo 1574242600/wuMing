@@ -15,7 +15,7 @@ const login = async (ctx) => {
 };
 
 const info = async (ctx) => {
-    if(!(await ctx.User.isLogin())){
+    if(!(ctx.User.isLogin())){
         ctx.response.body = language.isUserFalse;
         return 1;
     }

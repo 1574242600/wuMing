@@ -114,11 +114,30 @@ class User {
         return Object.assign({},language.succeed,data);
     }
 
-    async isLogin(){
+    isLogin(){
         return !(user === undefined)
     }
 
 }
+
+class Series {
+
+    async seriesList(page,total){
+        const data = {
+            data : await mysql.seriesList(page, total),
+        };
+
+        return Object.assign({},language.succeed,data);
+    }
+
+    async seriesListTotal(){
+        return {
+            total: await mysql.seriesListTotal()
+        };
+    }
+
+}
+
 
 class mysql {
 
@@ -188,6 +207,14 @@ class mysql {
         });
     }
 
+    /**
+     * 查询系列总集数
+     * @name addEsAndVideo
+     * @param xid Number 系列id
+     * @param sid Number 子系列id
+     * @return Number total
+     * @throws language.paramException
+     */
      static async querySeriesEsTotal(xid, sid){
         return Sequelize.Series.findOne({
             where:{ 'xid': xid ,'sid': sid},
@@ -198,11 +225,27 @@ class mysql {
         })
     }
 
+    static async seriesList(page,total){
+        return Sequelize.Series.findAll({
+            offset: total * (page - 1),
+            limit: page * total
+        }).then(list => {
+            return list;
+        })
+    }
+
+    static async seriesListTotal(){
+        return Sequelize.Series.max('xid').then(max => {
+            return max;
+        })
+    }
+
 }
 
 
 
 module.exports = {
     Admin,
-    User
+    User,
+    Series,
 };

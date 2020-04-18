@@ -17,7 +17,7 @@ module.exports = {
     },
     adminError: {
         'code': 401,
-        'mes': '没有权限'
+        'mes': '权限错误'
     },
     isUserFalse: {
         'code': 401,

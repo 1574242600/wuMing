@@ -5,10 +5,13 @@ const bodyParser = require('koa-bodyparser');
 const onerror = require('./middleware/onerror');
 const hreader = require('./middleware/headers');
 const router = require('./route');
+const Sequelize  = require('./utils/mysql');
 const init  = require('./middleware/init');
 
-global.tokenObj = {};     //用户token
-global.log = log;
+//以$开头的为全局变量
+global.$Sequelize = Sequelize;
+global.$tokenObj = {};     //用户token
+global.$log = log;
 
 
 process.on('uncaughtException', (e) => {

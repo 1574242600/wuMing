@@ -1,12 +1,5 @@
-/**
- * @global language
- * @global post
- * @global get
- *
- * */
-
 const login = async (ctx) => {
-    ctx.response.body = language.loginErr1;
+    ctx.response.body = $language.loginErr1;
 
     if (post.name !== undefined && post.pwd !== undefined) {
 
@@ -16,10 +9,10 @@ const login = async (ctx) => {
 
 const info = async (ctx) => {
     if(!(ctx.User.isLogin())){
-        ctx.response.body = language.isUserFalse;
+        ctx.response.body = $language.isUserFalse;
         return 1;
     }
-    ctx.response.body = await ctx.User.info(user.uid);
+    ctx.response.body = await ctx.User.info($user.uid);
 };
 
 module.exports = {login,info};

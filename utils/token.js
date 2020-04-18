@@ -1,17 +1,12 @@
 const md5 = require('md5-node');
 const randString = require('string-random');
 
-/**
- * @global tokenObj
- * @global get
- * */
-
 class token {
     ctx;
     token;
     constructor(ctx) {
         this.ctx = ctx;
-        this.token = get.token ? get.token : undefined ;
+        this.token = $get.token ? $get.token : undefined ;
     }
 
     async getToken(user) {
@@ -21,17 +16,17 @@ class token {
     }
 
     async getUserInfo(){
-        return tokenObj[this.token] ? tokenObj[this.token] : undefined;
+        return $tokenObj[this.token] ? $tokenObj[this.token] : undefined;
     }
 
     async setToken(user){
-        let keys = Object.keys(tokenObj);
+        let keys = Object.keys($tokenObj);
         let len = keys.length;
         if (len >= 10) {
             let key = keys.shift();
-            delete tokenObj[key];
+            delete $tokenObj[key];
         }
-        tokenObj[this.token] = user;
+        $tokenObj[this.token] = user;
     }
 }
 

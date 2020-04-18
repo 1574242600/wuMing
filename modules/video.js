@@ -1,10 +1,3 @@
-/**
- * @global language
- * @global get
- *
- * */
-
-
 const fs = require("fs");
 const path = require('path');
 const mime = require("mime");
@@ -28,7 +21,7 @@ const steam206 = async (ctx,videoPath) => {
         'Content-Type': mime.getType(path.extname(videoPath)),
     };
 
-    //console.log(headers);
+    //console.$log(headers);
     ctx.response.status = 206;
     ctx.set(headers);
 
@@ -37,9 +30,14 @@ const steam206 = async (ctx,videoPath) => {
 
 
 
-//todo 身份验证
-module.exports = async (ctx) =>{
-    let path  = "F:/工具/sp/The Lazy Song（懒汉之歌）.mp4";
 
+module.exports = async (ctx) =>{
+    if(!(ctx.User.isLogin())){
+        ctx.response.body = $language.isUserFalse;
+        return 1;
+    }
+
+
+    let path  = "F:/工具/sp/The Lazy Song（懒汉之歌）.mp4";
     ctx.response.body = await steam206(ctx,path);
 };

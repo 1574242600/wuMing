@@ -1,12 +1,3 @@
-/**
- * @global language
- * @global post
- * @global get
- *
- * */
-
-
-
 const addUser = async (ctx) =>{
     const is = () => {
         if (empty(post,['name','pwd'])) return true;
@@ -14,7 +5,7 @@ const addUser = async (ctx) =>{
         return isNaN(Number(post.admin));
     };
 
-    if(is()) throw language.paramException;
+    if(is()) throw $language.paramException;
     ctx.response.body = await ctx.Admin.addUser(post);
 };
 
@@ -27,8 +18,11 @@ const addSeries = async (ctx) =>{
 };
 
 const addEsAndVideo = async (ctx) =>{
-    if(empty(post,['xid','sid','name'])) throw language.paramException;
-    if(empty(post,['file']) && empty(post,['url'])) throw language.paramException;
+    if(empty(post,['xid','sid','name'])) throw $language.paramException;
+    if(empty(post,['file']) && empty(post,['url'])) throw $language.paramException;
+
+    //todo 文件检查
+
     ctx.response.body = await ctx.Admin.addEsAndVideo(post.xid,post.sid,post.name,post);
 };
 

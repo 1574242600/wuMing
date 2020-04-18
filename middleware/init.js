@@ -22,10 +22,12 @@ global.empty = (post,arr) => {
 };
 
 module.exports = async (ctx, next) => {
-    global.language = require('../language/cn');
-    global.token = require('../utils/token')(ctx);
-    global.user = await token.getUserInfo();
-    //console.log(tokenObj);
+    global.$get =  ctx.request.query;
+    if(ctx.request.method === 'POST') global.post = ctx.request.body;
+    global.$language = require('../language/cn');
+    global.$token = require('../utils/token')(ctx);
+    global.$user = await $token.getUserInfo();
+    //console.$log($tokenObj);
 
     ctx.Admin = new _class.Admin();
     ctx.User = new _class.User();

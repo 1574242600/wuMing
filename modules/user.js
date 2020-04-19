@@ -1,9 +1,9 @@
 const login = async (ctx) => {
     ctx.response.body = $language.loginErr1;
 
-    if (post.name !== undefined && post.pwd !== undefined) {
+    if ($post.name !== undefined && $post.pwd !== undefined) {
 
-        ctx.response.body = await ctx.User.login(post.name,post.pwd);
+        ctx.response.body = await ctx.User.login($post.name,$post.pwd);
     }
 };
 

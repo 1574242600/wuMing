@@ -2,14 +2,14 @@ const _class = require('../utils/allClass');
 /**
  * 判断对象是否为空
  * @name empty
- * @param post object
+ * @param $post object
  * @param arr string[]
  * @return boolean
  * @example
- * post = {name: 1, pwd: ''}
- * empty(post,['name'])  : false
- * empty(post,['pwd']) : true
- * empty(post,['pwd','name']) : true
+ * $post = {name: 1, pwd: ''}
+ * empty($post,['name'])  : false
+ * empty($post,['pwd']) : true
+ * empty($post,['pwd','name']) : true
  */
 
 global.empty = (post,arr) => {
@@ -23,7 +23,7 @@ global.empty = (post,arr) => {
 
 module.exports = async (ctx, next) => {
     global.$get =  ctx.request.query;
-    if(ctx.request.method === 'POST') global.post = ctx.request.body;
+    if(ctx.request.method === 'POST') global.$post = ctx.request.body;
     global.$language = require('../language/cn');
     global.$token = require('../utils/token')(ctx);
     global.$user = await $token.getUserInfo();

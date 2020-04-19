@@ -1,12 +1,15 @@
-const addUser = async (ctx) =>{
+const fs = require("fs");
+const Path = require('path');
+
+const addUser = async (ctx) => {
     const is = () => {
-        if (empty(post,['name','pwd'])) return true;
-        if (post.name.length > 32) return true;
-        return isNaN(Number(post.admin));
+        if (empty($post,['name','pwd'])) return true;
+        if ($post.name.length > 32) return true;
+        return isNaN(Number($post.admin));
     };
 
     if(is()) throw $language.paramException;
-    ctx.response.body = await ctx.Admin.addUser(post);
+    ctx.response.body = await ctx.Admin.addUser($post);
 };
 
 
@@ -14,16 +17,20 @@ const addSeries = async (ctx) =>{
     if(empty(post,['name','sid'])) throw language.paramException;
     const sid = isNaN(Number(post.sid)) ? 0 : Number(post.sid);
 
-    ctx.response.body = await ctx.Admin.addSeries(post.name,sid);
+    ctx.response.body = await ctx.Admin.addSeries($post.name,sid);
 };
 
 const addEsAndVideo = async (ctx) =>{
-    if(empty(post,['xid','sid','name'])) throw $language.paramException;
-    if(empty(post,['file']) && empty(post,['url'])) throw $language.paramException;
+    if(empty($post,['xid','sid','name'])) throw $language.paramException;
 
-    //todo 文件检查
+    let flag = empty($post,['file']);
+    let flag2 = empty($post,['url']);
+    if(flag && flag2) throw $language.paramException;
 
-    ctx.response.body = await ctx.Admin.addEsAndVideo(post.xid,post.sid,post.name,post);
+    if (!flag) await isVideo($post.file);
+
+    ctx.response.body = await ctx.Admin.addEsAndVideo($post.xid,$post.sid,$post.name,$post);
+    //todo url检查
 };
 
 
@@ -32,3 +39,21 @@ module.exports = {
     addSeries,
     addEsAndVideo,
 };
+
+
+async function isVideo(path) {
+    let t = Path.extname(path);
+
+    switch (t) {
+        case '.mp4':
+            break;
+        case '.flv':
+            break;
+        default:
+            throw $language.addVideoException;
+    }
+
+    let stat = fs.statSync(path);
+
+    if(stat.isFile() !== true) throw $language.addVideoException;
+}

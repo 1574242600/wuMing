@@ -45,11 +45,11 @@ class Admin {
      * @param post object['file','url'] 视频地址 任一即可
      * @return language object api信息
      * @example
-     * post = {
+     * $post = {
      *    file : '/114514/6KiA6K666Ieq55Sx.mp4'
      * }
      * insertEsAndVideo(1,'写示例只为玩梗')  : $language.succeed
-     * post = {
+     * $post = {
      *    url : 'https://www.example.com/10492/5oiR6KaB.mp4'
      * }
      * insertEsAndVideo(1,'小熊维尼第一集')  : $language.succeed

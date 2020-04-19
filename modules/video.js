@@ -21,7 +21,7 @@ const steam206 = async (ctx,videoPath) => {
         'Content-Type': mime.getType(path.extname(videoPath)),
     };
 
-    //console.$log(headers);
+    //console.log(headers);
     ctx.response.status = 206;
     ctx.set(headers);
 
@@ -37,7 +37,6 @@ module.exports = async (ctx) =>{
         return 1;
     }
 
-
-    let path  = "F:/工具/sp/The Lazy Song（懒汉之歌）.mp4";
+    let path  = "F:/工具/sp/日常第二十一话.mp4";
     ctx.response.body = await steam206(ctx,path);
 };

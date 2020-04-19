@@ -23,6 +23,7 @@ module.exports = {
         'code': 401,
         'mes': '你还没有登录'
     },
+    addVideoException: [400, '文件不合法','error'],
     paramException: [400 , '请输入正确的参数', 'info'],
     DatabaseException: [500 , '数据库错误，详情请查看日志', 'error']
 };

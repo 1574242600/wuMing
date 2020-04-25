@@ -25,7 +25,12 @@ const steam206 = async (ctx,videoPath) => {
     ctx.response.status = 206;
     ctx.set(headers);
 
-    return fs.createReadStream(videoPath,{start,end})
+    try {
+        return fs.createReadStream(videoPath, {start, end})
+    } catch (e) {
+        ctx.response.status = 416;
+        return $language.video416;
+    }
 };
 
 
@@ -37,6 +42,15 @@ module.exports = async (ctx) =>{
         return 1;
     }
 
-    let path  = "F:/工具/sp/日常第二十一话.mp4";
+    let vid = isNaN(Number($get.vid)) ? -1 : Number($get.vid);
+    if(vid <= 0) throw $language.paramException;
+
+    let path = await ctx.Video.getVideoPath(vid);
+
+    if(path == null){
+        ctx.response.body = $language.video404;
+        return 0;
+    }
+
     ctx.response.body = await steam206(ctx,path);
 };

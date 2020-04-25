@@ -140,7 +140,7 @@ class Series {
         let data = {
             data : await mysql.queryEsVideo(vid),
         };
-        if (data.data === null) throw $language.paramException;
+        if (data.data === null) return $language.video404
 
         let file = data.data.file;
         delete data.data.file;
@@ -151,6 +151,23 @@ class Series {
 
 }
 
+
+class Video {
+    async getVideoPath(vid) {
+        let cache = await $Cache.get(vid,'video');
+        let data;
+
+        if(cache !== null) {
+            data = cache;
+        } else {
+            data = await mysql.queryEsVideo(vid);
+            $Cache.set(vid,data,'video');
+        }
+
+        if(data == null) return null;
+        return data.file;
+    }
+}
 
 class mysql {
 
@@ -277,10 +294,9 @@ class mysql {
     }
 }
 
-
-
 module.exports = {
     Admin,
     User,
     Series,
+    Video
 };

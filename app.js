@@ -6,11 +6,15 @@ const onerror = require('./middleware/onerror');
 const hreader = require('./middleware/headers');
 const router = require('./route');
 const Sequelize  = require('./utils/mysql');
+const cache = require('./utils/cache');
 const init  = require('./middleware/init');
 
 //以$开头的为全局变量
-global.$Sequelize = Sequelize;
+
 global.$tokenObj = {};     //用户token
+global.$cacheObj = {};     //缓存
+global.$Sequelize = Sequelize;
+global.$Cache = cache();
 global.$log = log;
 
 
@@ -23,7 +27,6 @@ app.proxy = true;
 app.use(bodyParser());
 app.use(onerror);
 app.use(hreader);
-
 app.use(init);
 
 app.use(router.routes());

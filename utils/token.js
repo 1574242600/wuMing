@@ -4,6 +4,7 @@ const randString = require('string-random');
 class token {
     ctx;
     token;
+    maxLength = 10;
     constructor(ctx) {
         this.ctx = ctx;
         this.token = $get.token ? $get.token : undefined ;
@@ -22,7 +23,7 @@ class token {
     async setToken(user){
         let keys = Object.keys($tokenObj);
         let len = keys.length;
-        if (len >= 10) {
+        if (len >= this.maxLength) {
             let key = keys.shift();
             delete $tokenObj[key];
         }

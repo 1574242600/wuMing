@@ -4,7 +4,7 @@ const User = require('./modules/user');
 const Admin = require('./modules/admin');
 const Video = require('./modules/video');
 const Series = require('./modules/series');
-//判断服务端是否存活   ps: just monika!
+
 router.get('/ddlc', async (ctx) => {
     ctx.response.body = Object.assign({},$language.succeed,{data: {siteName:config.sitename}});
 });

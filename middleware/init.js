@@ -32,5 +32,6 @@ module.exports = async (ctx, next) => {
     ctx.Admin = new _class.Admin();
     ctx.User = new _class.User();
     ctx.Series = new _class.Series();
+    ctx.Video = new _class.Video();
     await next();
 };

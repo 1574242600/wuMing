@@ -3,7 +3,7 @@ const app = new Koa();
 const log = require('./utils/logger');
 const bodyParser = require('koa-bodyparser');
 const onerror = require('./middleware/onerror');
-const hreader = require('./middleware/headers');
+const headers = require('./middleware/headers');
 const router = require('./route');
 const Sequelize  = require('./utils/mysql');
 const cache = require('./utils/cache');
@@ -26,7 +26,7 @@ process.on('uncaughtException', (e) => {
 app.proxy = true;
 app.use(bodyParser());
 app.use(onerror);
-app.use(hreader);
+app.use(headers);
 app.use(init);
 
 app.use(router.routes());

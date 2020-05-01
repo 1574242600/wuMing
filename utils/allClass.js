@@ -101,9 +101,36 @@ class User {
 
     async info(uid){
         const data = {
-            data : Object.assign($user, await mysql.queryUser({uid: uid}, ['name'])),
+            data: Object.assign($user, await mysql.queryUser({uid: uid}, ['name'])),
         };
         return Object.assign({},$language.succeed,data);
+    }
+
+    History = {
+        up: async (uid,post) => {
+            const created = await mysql.insertUserHistory(uid,post)
+
+            if(created){
+                return $language.succeed;
+            }
+
+            mysql.updateUserHistory(uid,post)
+            return $language.succeed;
+        },
+        one: async (uid, xid) => {
+            const data = {
+                data: await mysql.queryUserOneHistory(uid,xid)
+            }
+
+            return Object.assign({},$language.succeed,data);
+        },
+        all: async (uid, page, total) => {
+            const data = {
+                data: await mysql.queryUserAllHistory(uid,page,total)
+            }
+
+            return Object.assign({},$language.succeed,data);
+        }
     }
 
     isLogin(){
@@ -128,9 +155,9 @@ class Series {
         };
     }
 
-    async seriesEsList(xid,sid){
+    async seriesEsList(xid){
         const data = {
-            data : await mysql.querySeriesEsList(xid, sid),
+            data : await mysql.querySeriesEsList(xid),
         };
 
         return Object.assign({},$language.succeed,data);
@@ -171,6 +198,13 @@ class Video {
 
 class mysql {
 
+    /**
+     * 查询用户
+     * @name queryUser
+     * @param where [] sql where条件
+     * @param key string[] 返回键
+     * @return object 用户信息
+     */
     static async queryUser(where = [],key = undefined){
         return await $Sequelize.Users.findOne(({
             where: where,
@@ -180,6 +214,12 @@ class mysql {
         });
     }
 
+    /**
+     * 插入用户
+     * @name insertUser
+     * @param post object post参数
+     * @return created Number 判断是否插入成功
+     */
     static async insertUser(post){
         const rand = stringRandom(6);
         return await $Sequelize.Users.findOrCreate({where: {name: post.name},
@@ -193,6 +233,97 @@ class mysql {
         });
     }
 
+    /**
+     * 插入用户历史记录
+     * @name insertUserHistory
+     * @param uid Number 用户id
+     * @param post object post参数
+     * @return created Number 判断是否插入成功
+     */
+    static async insertUserHistory(uid, post){
+        return await $Sequelize.History.findOrCreate({
+            where: {
+                uid: uid,
+                xid: post.xid
+            },
+            defaults: {
+                uid: uid,
+                xid: post.xid,
+                es: post.es,
+                lt: post.lt,
+                time: $Sequelize.sequelize.fn('NOW')
+            }
+        }).then(([history, created]) => {
+            return created;
+        });
+    }
+
+    /**
+     * 更新用户历史记录
+     * @name updateUserHistory
+     * @param uid Number 用户id
+     * @param post object post参数
+     * @return true
+     */
+    static async updateUserHistory(uid, post){
+        return await $Sequelize.History.findOne({
+            where: {
+                uid: uid,
+                xid: post.xid
+            }
+        }).then(history => {
+            history.update({
+                es: post.es,
+                lt: post.lt,
+                time: $Sequelize.sequelize.fn('NOW')
+            });
+
+            return true
+        })
+    }
+
+    /**
+     * 查询用户多个历史记录
+     * @name queryUserAllHistory
+     * @param uid Number 用户id
+     * @param page Number 当前页数
+     * @param total Number 当前页总数
+     * @return list object
+     */
+    static async queryUserAllHistory(uid, page, total){
+        return $Sequelize.History.findAll({
+            where: {uid: uid},
+            offset: total * (page - 1),
+            limit: page * total,
+            attributes: ['xid','es','lt','time']
+        }).then(list => {
+            return list;
+        })
+    }
+
+    /**
+     * 查询用户单个历史记录
+     * @name queryUserOneHistory
+     * @param uid Number 用户id
+     * @param xid Number 系列id
+     * @return object
+     */
+    static async queryUserOneHistory(uid, xid){
+        return $Sequelize.History.findOne({
+            where: {uid: uid},
+            attributes: ['xid','es','lt','time']
+        }).then(data => {
+            return data ? data.dataValues : null;
+        })
+    }
+
+    /**
+     * 插入系列
+     * @name insertSeries
+     * @param name string 系列名称
+     * @param sid Number 父系列id
+     * @return created Number 判断是否插入成功
+     */
     static async insertSeries(name, sid){
         return await $Sequelize.Series.findOrCreate({where: {name: name},
             defaults: {
@@ -200,20 +331,28 @@ class mysql {
                 'sid': sid,
                 'total' : 0
             }
-        }).then(([user, created]) => {
+        }).then(([series, created]) => {
             return created;
         });
 
     }
 
-    static async insertEsAndVideo(xid, sid, name, post){
+    /**
+     * 插入系列单集和对应的视频
+     * @name insertEsAndVideo
+     * @param xid Number 系列id
+     * @param name string 话名称
+     * @param post object post参数
+     * @return true
+     * @throws $language.DatabaseException
+     */
+    static async insertEsAndVideo(xid, name, post){
         let S = $Sequelize.sequelize;
-        let es =  await this.querySeriesEsTotal(xid,sid) + 1;
+        let es =  await this.querySeriesEsTotal(xid) + 1;
         return S.transaction(async t => {
 
             let vid = await $Sequelize.Es.create({
                     'xid': xid,
-                    'sid': sid,
                     'name': name,
                     'es' : es,
             },{transaction: t}).then(es =>{
@@ -239,15 +378,14 @@ class mysql {
 
     /**
      * 查询系列总集数
-     * @name insertEsAndVideo
+     * @name querySeriesEsTotal
      * @param xid Number 系列id
-     * @param sid Number 子系列id
      * @return Number total
-     * @throws language.paramException
+     * @throws $language.paramException
      */
-     static async querySeriesEsTotal(xid, sid){
+     static async querySeriesEsTotal(xid){
         return $Sequelize.Series.findOne({
-            where: { 'xid': xid ,'sid': sid},
+            where: { 'xid': xid },
             attributes: ['total']
         }).then(c => {
                 if (c === null) throw $language.paramException;
@@ -255,6 +393,13 @@ class mysql {
         })
     }
 
+    /**
+     * 查询系列列表
+     * @name querySeriesList
+     * @param page Number 当前页数
+     * @param total Number 当前页总数
+     * @return list object 系列列表
+     */
     static async querySeriesList(page, total){
         return $Sequelize.Series.findAll({
             offset: total * (page - 1),
@@ -264,17 +409,27 @@ class mysql {
         })
     }
 
+    /**
+     * 查询系列总数
+     * @name querySeriesListTotal
+     * @return max Number 总数
+     */
     static async querySeriesListTotal(){
         return $Sequelize.Series.max('xid').then(max => {
             return max;
         })
     }
 
-    static async querySeriesEsList(xid, sid){
+    /**
+     * 查询系列话列表
+     * @name querySeriesListTotal
+     * @param xid Number 系列id
+     * @return list object 系列话列表
+     */
+    static async querySeriesEsList(xid){
         return $Sequelize.Es.findAll({
             where:{
                 xid: xid,
-                sid: sid
             },
             attributes: ['es','name','vid']
         }).then(list => {
@@ -282,6 +437,12 @@ class mysql {
         })
     }
 
+    /**
+     * 查询话对应视频
+     * @name queryEsVideo
+     * @param vid Number 视频id
+     * @return object 视频路径，url
+     */
     static async queryEsVideo(vid){
         return $Sequelize.Videos.findOne({
             where:{

@@ -8,7 +8,8 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
         max: 5,
         min: 0,
         idle: 30000
-    }
+    },
+    timezone: '+08:00'
 });
 
 //todo 封面
@@ -40,13 +41,8 @@ const Series = sequelize.define('series', {
 const Es = sequelize.define('es', {
     xid: {
         type: Sequelize.INTEGER(),
-        index: true,
-        allowNull:false
-    },
-    sid: {
-        type:Sequelize.INTEGER(),
-        defaultValue: 0,
-        index: true,
+        primaryKey: true,
+        autoIncrement: false,
         allowNull:false
     },
     es: {
@@ -118,13 +114,48 @@ const Users = sequelize.define('users', {
     freezeTableName: true
 });
 
+
+const History = sequelize.define('history', {
+    uid: {
+        type: Sequelize.INTEGER(),
+        index: true,
+    },
+    xid: {
+        type: Sequelize.INTEGER(),
+        primaryKey: true,
+        allowNull:false,
+        autoIncrement: false,
+    },
+    es: {
+        type: Sequelize.INTEGER(),
+        index: true,
+        allowNull:false
+    },
+    lt: {
+        type: Sequelize.INTEGER(),
+        allowNull:false
+    },
+    time: {
+        type: Sequelize.DATE,
+        allowNull:false
+    }
+}, {
+    timestamps: false ,
+    freezeTableName: true
+});
+
+
 Es.removeAttribute('id');
 Videos.removeAttribute('id');
 Series.removeAttribute('id');
+History.removeAttribute('id');
 
 
 Series.hasMany(Es,{ foreignKey: 'xid' });
+Series.hasMany(History,{ sourceKey: 'xid',foreignKey: 'xid' });
+Users.hasMany(History,{ foreignKey: 'uid' });
 Es.hasMany(Videos,{ sourceKey: 'vid', foreignKey: 'vid'});
+
 
 //sequelize.sync();
 
@@ -133,17 +164,17 @@ module.exports = {
     Users,
     Series,
     Es,
-    Videos
+    Videos,
+    History
 };
 
 
 /*
-
 系列表 `series`
 
 | 字段名 | 类型 | 备注 |
 |-------|-----|-------|
-| xid    | int(11) pr(auto) | id |
+| xid    | int(11) pr(auto) | xid |
 | sid   | int(11)  默认 0  | 父id |
 | name  | vchar(64)        | 名称 |
 | total | int(11)          | 总话数 |
@@ -152,11 +183,10 @@ module.exports = {
 
 | 字段名 | 类型 | 备注 |
 |-------|-----|-------|
-| series.xid    | int(11) index       | 见系列表 |
-| sid   | int(11) index    | 见系列表 |
+| series.xid    | int(11) pr      | 见系列表 |
 | es    | int(11) index    | 话数 |
 | name  | vchar(64)        | 话名称 |
-| vid   | int(11) pr(auto)          | 视频id |
+| vid   | int(11) un(auto)          | 视频id |
 
 视频表 `videos`
 
@@ -183,13 +213,13 @@ module.exports = {
 | users.uid    | int(11) pr         | 见用户表 |
 | list   | int(11)            | 收藏     |
 
-历史记录表
+历史记录表 `history`
 
 | 字段名 | 类型 | 备注 |
 |-------|-----|-------|
-| users.uid  | int(11) pr         | 见用户表 |
-| series.xid   | int(11)            | 见系列表 |
-| es   | int(11)            | 当前话数 |
+| users.uid  | int(11) index        | 见用户表 |
+| series.xid   | int(11) pr          | 见系列表 |
+| es   | int(11)  index          | 当前话数 |
 | lt   | int(11)            | 上一次观看进度 |
 | time | date               | 上一次观看时间 |
 

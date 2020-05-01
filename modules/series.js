@@ -4,9 +4,12 @@ const seriesList = async (ctx) => {
         return 1;
     }
 
-    let page = isNaN(Number($get.page)) ? 1 : Number($get.page);
-    let total = isNaN(Number($get.total)) ? 10 : Number($get.total);
-    if(page <= 0 || total <= 0) throw $language.paramException;
+    $get.page =  $get.page === undefined ? 1 : $get.page
+    $get.total =  $get.total === undefined ? 20 : $get.total
+
+    let param = isPosInt($get.page,$get.total);
+    let page = param[0];
+    let total = param[1];
 
     ctx.response.body = Object.assign(
         await ctx.Series.seriesList(page,total),
@@ -20,11 +23,10 @@ const esList = async (ctx) => {
         return 1;
     }
 
-    let xid = isNaN(Number($get.xid)) ? 0 : Number($get.xid);
-    let sid = isNaN(Number($get.sid)) ? 0 : Number($get.sid);
-    if(xid <= 0 || sid < 0) throw $language.paramException;
+    let param = isPosInt($get.xid);
+    let xid = param[0];
 
-    ctx.response.body = await ctx.Series.seriesEsList(xid, sid);
+    ctx.response.body = await ctx.Series.seriesEsList(xid);
 };
 
 const videoUrl = async (ctx) => {
@@ -33,8 +35,8 @@ const videoUrl = async (ctx) => {
         return 1;
     }
 
-    let vid = isNaN(Number($get.vid)) ? 0 : Number($get.vid);
-    if(vid <= 0) throw $language.paramException;
+    let param = isPosInt($get.vid);
+    let vid = param[0];
 
     ctx.response.body = await ctx.Series.queryEsVideo(vid);
 };

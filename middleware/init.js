@@ -1,4 +1,5 @@
 const _class = require('../utils/allClass');
+
 /**
  * 判断对象是否为空
  * @name empty
@@ -19,6 +20,27 @@ global.empty = (post,arr) => {
     }
 
     return false
+};
+
+/**
+ * 判断是否为正整数
+ * @name isPosInt
+ * @return array
+ * @throws $language.paramException
+ */
+
+global.isPosInt = (...arguments) => {
+    let len = arguments.length;
+    let int;
+    let arr = [];
+
+    for(let i=0; i < len; i++){
+        int = isNaN(Number(arguments[i])) ? 0 : Number(arguments[i]);
+        if(int <= 0) throw $language.paramException;
+        arr[i] = int;
+    }
+
+    return arr
 };
 
 module.exports = async (ctx, next) => {

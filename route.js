@@ -18,6 +18,8 @@ router.get('/series/es/list',Series.esList);
 router.get('/series/es/videoUrl',Series.videoUrl);
 router.post('/user/login', User.login);
 router.get('/user/info', User.info);
+router.get('/user/history/list', User.history.list);
+router.post('/user/history/up', User.history.up);
 router.post('/admin/user/add', Admin.addUser);
 router.post('/admin/series/add', Admin.addSeries);
 router.post('/admin/es/add', Admin.addEsAndVideo);

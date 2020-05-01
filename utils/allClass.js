@@ -122,6 +122,7 @@ class User {
                 data: await mysql.queryUserOneHistory(uid,xid)
             }
 
+            if(data.data === null) data.data = [];
             return Object.assign({},$language.succeed,data);
         },
         all: async (uid, page, total) => {
@@ -310,7 +311,7 @@ class mysql {
      */
     static async queryUserOneHistory(uid, xid){
         return $Sequelize.History.findOne({
-            where: {uid: uid},
+            where: {uid: uid,xid: xid},
             attributes: ['xid','es','lt','time']
         }).then(data => {
             return data ? data.dataValues : null;

@@ -48,7 +48,7 @@ module.exports = async (ctx) =>{
 
     let path = await ctx.Video.getVideoPath(vid);
 
-    if(path == null){
+    if(path === null){
         ctx.response.body = $language.video404;
         return 0;
     }

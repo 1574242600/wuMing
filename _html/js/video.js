@@ -23,10 +23,10 @@ $(() => {
         }
 
         if(data.code !== 200){
-            NError(data,'./$list.html')
+            NError(data,'./list.html')
         }
 
-        if(JSON.stringify(data.data) === ('{}' || '[]')) {
+        if(JSON.stringify(data.data) ===  '[]') {
             mdui.dialog({
                 title: '错误',
                 content: '系列不存在',
@@ -50,11 +50,6 @@ $(() => {
 })
 
 
-
-
-
-
-//todo url 播放
 async function play(es) {
     listActive(es);
     $es = es;
@@ -62,40 +57,57 @@ async function play(es) {
 
     let server = $Storage.get('server');
     let userToken = $Storage.get('userToken');
-    let url = server + '/localVideo/?token=' + userToken +'&vid=' + vid;
-    let video = {
-        url: url,
-    };
 
-    if(dp instanceof Object) {
-        window.clearInterval($IntervalId);
-        dp.switchVideo(video);
-        return 1;
-    }
+    $.ajax({
+        method: 'GET',
+        url: server + `/series/es/videoUrl/?token=${userToken}&vid=${vid}`,
+        dataType: 'json',
+        success: async (data) => {
+            if (dp instanceof Object) {
+                window.clearInterval($IntervalId);
+                dp.destroy();
+            }
 
-    dp = new DPlayer({
-        container: document.getElementById('dplayer'),
-        video: video,
-    });
+            let video = {
+                quality: [
+                    {
+                        name: '外部',
+                        url: data.data.url,
+                    },
+                    {
+                        name: '本地',
+                        url: server + data.data.localUrl,
+                    },
+                ],
+                defaultQuality: 0,
+            };
+
+            dp = new DPlayer({
+                container: document.getElementById('dplayer'),
+                video: video,
+            });
 
 
-    dp.on('play', function() {
+            dp.on('play', function() {
+                if($lastTime !== null) {
+                    mdui.snackbar({
+                        message: `上次观看到第${$lastTime.es}话 ${dateString($lastTime.lt)} 是否跳转`,
+                        buttonText: '跳转',
+                        position: 'left-top',
+                        onButtonClick: toPlayLastTime,
+                    });
+                }
 
-        mdui.snackbar({
-            message: `上次观看到 ${dateString($lastTime.lt)} 是否跳转`,
-            buttonText: '跳转',
-            position: 'left-top',
-            onButtonClick: toPlayLastTime,
-        });
+                $IntervalId = window.setInterval(() => {
+                    upHistory(Math.ceil(dp.video.currentTime))
+                },3000)
+            });
 
-        $IntervalId = window.setInterval(() => {
-            upHistory(Math.ceil(dp.video.currentTime))
-        },3000)
-    });
-
-    dp.on('pause', function() {
-        window.clearInterval($IntervalId);
-    });
+            dp.on('pause', function() {
+                window.clearInterval($IntervalId);
+            });
+        }
+    })
 }
 
 
@@ -105,6 +117,11 @@ async function echoList(data){
     let name;
     let vid;
     let esList = $('#esList');
+
+    if(window.screen.width <= 1024){
+        echoListSm(data);
+        return 0;
+    }
 
     for (let key in data){
         es = data[key].es;
@@ -123,6 +140,32 @@ async function echoList(data){
         `)
     }
 }
+
+async function echoListSm(data){
+    let es;
+    let name;
+    let vid;
+    let esList = $('#esList-sm');
+
+    for (let key in data){
+        es = data[key].es;
+        name = data[key].name;
+        vid = data[key].vid;
+
+        if(key === '0'){
+            esList.append(`
+                <div id="list-${key}" class="mdui-card mdui-list-item-active mdui-m-r-2" style="width:100px;float: left"  onclick="play(${es})"><div><div class="mdui-m-b-1 mdui-m-t-1 mdui-m-l-1">第${es}话</div><div class="mdui-m-l-1 mdui-m-b-1" style="opacity:.52">${name}</div></div></div>
+            `)
+            continue;
+        }
+
+        esList.append(`
+                <div id="list-${key}" class="mdui-card mdui-m-r-2" style="width:100px;float: left"  onclick="play(${es})"><div><div class="mdui-m-b-1 mdui-m-t-1 mdui-m-l-1">第${es}话</div><div class="mdui-m-l-1 mdui-m-b-1" style="opacity:.52">${name}</div></div></div>
+        `)
+    }
+    esList.attr('style',`width: ${es * 100 + es * 16}px`)
+}
+
 
 
 async function upHistory(lt){

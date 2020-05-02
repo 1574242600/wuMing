@@ -172,7 +172,7 @@ class Series {
 
         let file = data.data.file;
         delete data.data.file;
-        if(file.length > -1) data.data.localUrl = '/video/?vid=' + vid;
+        if(file.length > -1) data.data.localUrl = `/localVideo/?token=${$get.token}&vid=${vid}`;
 
         return Object.assign({},$language.succeed,data);
     }

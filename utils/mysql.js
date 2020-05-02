@@ -72,7 +72,7 @@ const Videos = sequelize.define('videos', {
         unique: true,
     },
     url: {
-        type: Sequelize.STRING(128),
+        type: Sequelize.STRING(256),
         allowNull:false
     },
     file: {
@@ -193,7 +193,7 @@ module.exports = {
 | 字段名 | 类型 | 备注 |
 |-------|-----|-------|
 | es.vid    | int(11) pr  | 视频id |
-| url    | vchar(128)        | 视频url |
+| url    | vchar(256)        | 视频url |
 | file   | vchar(128)        | 视频文件路径 |
 
 用户表 `users`

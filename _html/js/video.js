@@ -92,14 +92,14 @@ async function play(es) {
 
 
             dp.on('play', function() {
-                if($lastTime !== null) {
+                if($lastTime.ok !== 1) {
                     mdui.snackbar({
                         message: `上次观看到第${$lastTime.es}话 ${dateString($lastTime.lt)} 是否跳转`,
                         buttonText: '跳转',
                         position: 'left-top',
                         onButtonClick: toPlayLastTime,
                     });
-                    $lastTime = null;
+                    $lastTime.ok = 1;
                 }
 
                 $IntervalId = window.setInterval(() => {

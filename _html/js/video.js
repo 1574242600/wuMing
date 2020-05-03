@@ -11,6 +11,9 @@ let $lastTime; //上次播放进度等
 $(() => {
     let userToken = $Storage.get('userToken');
     let server = $Storage.get('server');
+    let user = $Storage.get('userInfo');
+
+    if(user.admin >= 4) $('#admin').show();
 
     $.ajax({
     method: 'GET',
@@ -96,6 +99,7 @@ async function play(es) {
                         position: 'left-top',
                         onButtonClick: toPlayLastTime,
                     });
+                    $lastTime = null;
                 }
 
                 $IntervalId = window.setInterval(() => {
@@ -218,7 +222,7 @@ function toPlayLastTime() {
     setTimeout(() => {
         dp.seek($lastTime.lt);
         dp.notice('已跳转到上次观看进度',3000);
-    },1000)
+    },1500)
 
 }
 
@@ -231,4 +235,49 @@ function dateString(s) {
     s = s % 60;
 
     return `${min}分${s}秒`;
+}
+
+async function addEs() {
+    let server = $Storage.get('server');
+    let userToken = $Storage.get('userToken');
+    const spinner = $('#spinner');
+
+    mdui.dialog({
+        title: '添加单集',
+        content:'<form class="mdui-textfield" id="addEsFrom"><input class="mdui-textfield-input mdui-m-b-2" name="title" type="text" placeholder="标题"/><input class="mdui-textfield-input mdui-m-b-2" name="url" type="url" placeholder="url"/><input class="mdui-textfield-input" name="file" type="text" placeholder="路径"/></form>',
+        buttons: [{
+            text: '添加',
+            onClick: () => {
+                spinner.show();
+                let data = $('#addEsFrom').serializeArray();
+
+                $.ajax({
+                    method: 'POST',
+                    url: server + `/admin/es/add/?token=${userToken}`,
+                    dataType: 'json',
+                    data: {
+                        xid: $xid,
+                        name: data[0].value,
+                        url: data[1].value,
+                        file: data[2].value
+                    },
+                    success: (data) => {
+                        let mes = '添加成功';
+
+                        if(data.code !== 200){
+                            mes = data.mes;
+                        }
+
+                        mdui.snackbar({
+                            message: mes,
+                            position: 'left-top',
+                        });
+
+                        spinner.hide();
+                    }
+                })
+            }
+        }]
+    });
+
 }

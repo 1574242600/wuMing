@@ -1,6 +1,10 @@
 $(() => {
    let userToken = $Storage.get('userToken');
    let server = $Storage.get('server');
+    let user = $Storage.get('userInfo');
+
+    if(user.admin >= 4) $('#admin').show();
+
    $.ajax({
        method: 'GET',
        url: server + '/series/list/?token=' + userToken,
@@ -51,4 +55,45 @@ async function echoList(list) {
         </div>
         `)
     }
+}
+
+async function addSeries() {
+    let server = $Storage.get('server');
+    let userToken = $Storage.get('userToken');
+    const spinner = $('#spinner');
+
+    mdui.dialog({
+        title: '添加系列',
+        content:'<form class="mdui-textfield" id="addSeriesFrom"><input class="mdui-textfield-input mdui-m-b-2" name="sid" type="text" placeholder="父id" value="0" /><input class="mdui-textfield-input" name="name" type="url" placeholder="标题"/></form>',
+        buttons: [{
+            text: '添加',
+            onClick: () => {
+                spinner.show();
+                let data = $('#addSeriesFrom').serializeArray();
+                $.ajax({
+                    method: 'POST',
+                    url: server + `/admin/series/add/?token=${userToken}`,
+                    dataType: 'json',
+                    data: {
+                        sid: data[0].value,
+                        name: data[1].value,
+                    },
+                    success: (data) => {
+                        let mes = '添加成功';
+
+                        if(data.code !== 200){
+                            mes = data.mes;
+                        }
+
+                        mdui.snackbar({
+                            message: mes,
+                            position: 'left-top',
+                        });
+                        spinner.hide();
+                    }
+                })
+            }
+        }]
+    });
+
 }

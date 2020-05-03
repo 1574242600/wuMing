@@ -40,8 +40,7 @@ class Admin {
      * 添加话和对应视频
      * @name addEsAndVideo
      * @param xid Number 系列id
-     * @param name string 话标题 可为空
-     * @param sid Number 子系列id
+     * @param name string 话标题
      * @param post object['file','url'] 视频地址 任一即可
      * @return language object api信息
      * @example
@@ -55,14 +54,14 @@ class Admin {
      * insertEsAndVideo(1,'小熊维尼第一集')  : $language.succeed
      */
 
-    async addEsAndVideo(xid, sid = 0, name = '0', post){
+    async addEsAndVideo(xid, name = '0', post){
         if (!this.isAdmin()){
             return $language.adminError;
         }
         post.file = post.file ? post.file : 0;
         post.url = post.url ? post.file : 0;
 
-        const created = await mysql.insertEsAndVideo(xid,sid,name,post);
+        const created = await mysql.insertEsAndVideo(xid,name,post);
 
         if (created){
             this.adminLog(`管理员[${$user.uid}]: 添加话[${xid}-${sid}] 《${name}》成功 --`+ new Date());

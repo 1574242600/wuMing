@@ -14,14 +14,14 @@ const addUser = async (ctx) => {
 
 
 const addSeries = async (ctx) =>{
-    if(empty(post,['name','sid'])) throw language.paramException;
-    const sid = isNaN(Number(post.sid)) ? 0 : Number(post.sid);
+    if(empty(post,['name','sid'])) throw $language.paramException;
+    const sid = isNaN(Number(post.sid)) ? 0 : Number($post.sid);
 
     ctx.response.body = await ctx.Admin.addSeries($post.name,sid);
 };
 
 const addEsAndVideo = async (ctx) =>{
-    if(empty($post,['xid','sid','name'])) throw $language.paramException;
+    if(empty($post,['xid','name'])) throw $language.paramException;
 
     let flag = empty($post,['file']);
     let flag2 = empty($post,['url']);
@@ -29,7 +29,7 @@ const addEsAndVideo = async (ctx) =>{
 
     if (!flag) await isVideo($post.file);
 
-    ctx.response.body = await ctx.Admin.addEsAndVideo($post.xid,$post.sid,$post.name,$post);
+    ctx.response.body = await ctx.Admin.addEsAndVideo($post.xid,$post.name,$post);
     //todo url检查
 };
 

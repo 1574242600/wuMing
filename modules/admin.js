@@ -14,8 +14,8 @@ const addUser = async (ctx) => {
 
 
 const addSeries = async (ctx) =>{
-    if(empty(post,['name','sid'])) throw $language.paramException;
-    const sid = isNaN(Number(post.sid)) ? 0 : Number($post.sid);
+    if(empty($post,['name','sid'])) throw $language.paramException;
+    const sid = isNaN(Number($post.sid)) ? 0 : Number($post.sid);
 
     ctx.response.body = await ctx.Admin.addSeries($post.name,sid);
 };

@@ -64,7 +64,7 @@ class Admin {
         const created = await mysql.insertEsAndVideo(xid,name,post);
 
         if (created){
-            this.adminLog(`管理员[${$user.uid}]: 添加话[${xid}-${sid}] 《${name}》成功 --`+ new Date());
+            this.adminLog(`管理员[${$user.uid}]: 系列[${xid}]添加话 《${name}》成功 --`+ new Date());
             return $language.succeed;
         }
     }

@@ -365,7 +365,7 @@ class mysql {
                 'url' : post.url ,
             },{transaction: t});
 
-            await $Sequelize.Series.update({total: es},{where:{'xid': xid ,'sid': sid},transaction: t});
+            await $Sequelize.Series.update({total: es},{where:{'xid': xid},transaction: t});
 
             return true;
         }).then(result => {

@@ -42,7 +42,7 @@ module.exports = {
 
 
 async function isVideo(path) {
-    let t = Path.extname(path);
+    let t = Path.extname(path).toLowerCase();
 
     switch (t) {
         case '.mp4':

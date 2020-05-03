@@ -59,7 +59,7 @@ class Admin {
             return $language.adminError;
         }
         post.file = post.file ? post.file : 0;
-        post.url = post.url ? post.file : 0;
+        post.url = post.url ? post.url : 0;
 
         const created = await mysql.insertEsAndVideo(xid,name,post);
 
